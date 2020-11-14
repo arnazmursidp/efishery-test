@@ -3,35 +3,6 @@ import DataTable from 'react-data-table-component'
 import Input from './Input'
 import Button from './Button'
 
-// Initialize columns
-const columns = [
-  {
-    name: 'Komoditas',
-    selector: 'komoditas',
-    sortable: true
-  },
-  {
-    name: 'Provinsi',
-    selector: 'area_provinsi',
-    sortable: true
-  },
-  {
-    name: 'Kota',
-    selector: 'area_kota',
-    sortable: true
-  },
-  {
-    name: 'Ukuran',
-    selector: 'size',
-    sortable: true
-  },
-  {
-    name: 'Harga',
-    selector: 'price',
-    sortable: true
-  }
-]
-
 class Table extends Component {
   constructor(props) {
     super(props)
@@ -42,13 +13,13 @@ class Table extends Component {
       city: '',
       size: '',
       price: '',
-      uuid: 'ab1434e0-9b7f-4b74-bf25-420e0bdfe31c'
+      uuid: '',
+      formCondition: ''
     }
 
     this.handleFilteredData = this.handleFilteredData.bind(this)
     this.handleResetButton = this.handleResetButton.bind(this)
     this.handleAddEditData = this.handleAddEditData.bind(this)
-    this.handleAddEditButton = this.handleAddEditButton.bind(this)
   }
  
   handleAddEditButton () {
@@ -58,13 +29,34 @@ class Table extends Component {
       city,
       size,
       price,
-      uuid
+      uuid,
+      formCondition
     } = this.state
+    if (formCondition === 'edit') {
+      this.props.editFishData({
+        comodity,
+        province,
+        city,
+        size,
+        price,
+        uuid
+      })
+    } else {
+      this.props.addFishData({
+        comodity,
+        province,
+        city,
+        size,
+        price
+      })
+    }
+  }
+
+  handleDeleteFishData (uuid) {
     this.props.deleteFishData({
       uuid
     })
   }
-
   handleResetButton (event) {
     this.setState({
       searchText: ''
@@ -86,6 +78,87 @@ class Table extends Component {
     this.setState({
       searchText: target.value
     })
+  }
+
+  filteredItems () {
+    const { data } = this.props
+    const { searchText } = this.state
+    return data.filter(
+      item =>
+        (item.komoditas && item.komoditas.toLowerCase().includes(searchText.toLowerCase())) ||
+        (item.area_kota && item.area_kota.toLowerCase().includes(searchText.toLowerCase())) ||
+        (item.area_provinsi && item.area_provinsi.toLowerCase().includes(searchText.toLowerCase())) ||
+        (item.price && item.price.toLowerCase().includes(searchText.toLowerCase())) ||
+        (item.size && item.size.toLowerCase().includes(searchText.toLowerCase()))
+    )
+  }
+
+  setTempEditData (data) {
+    this.setState({
+      uuid: data.uuid,
+      comodity: data.komoditas,
+      city: data.area_kota,
+      province: data.area_provinsi,
+      size: data.size,
+      price: data.price
+    })
+  }
+
+  // Initialize columns
+  columns () {
+    return [
+      {
+        name: 'uuid',
+        selector: 'uuid',
+        omit: true,
+        sortable: true
+      },
+      {
+        name: 'Komoditas',
+        selector: 'komoditas',
+        sortable: true
+      },
+      {
+        name: 'Provinsi',
+        selector: 'area_provinsi',
+        sortable: true
+      },
+      {
+        name: 'Kota',
+        selector: 'area_kota',
+        sortable: true
+      },
+      {
+        name: 'Ukuran',
+        selector: 'size',
+        sortable: true
+      },
+      {
+        name: 'Harga',
+        selector: 'price',
+        sortable: true
+      },
+      {
+        name: 'Actions',
+        button: true,
+        cell: row => this.actionLayout(row)
+      }
+    ]
+  }
+
+  actionLayout (data) {
+    return (
+      <div>
+        <Button text="Edit Data" onClick={(e) => {
+          this.setState({ formCondition: 'edit' })
+          this.setTempEditData(data)
+          this.handleAddEditButton()
+        }}/>
+        <Button text="Hapus Data" onClick={(e) => {
+          this.handleDeleteFishData(data.uuid)
+        }}/>
+      </div>
+    )
   }
 
   filterLayout () {
@@ -133,22 +206,12 @@ class Table extends Component {
         />
         <Button
           text="Y"
-          onClick={this.handleAddEditButton}
+          onClick={(e) => {
+            this.setState({ formCondition: 'add' })
+            this.handleAddEditButton()
+          }}
         />
       </div>
-    )
-  }
-
-  filteredItems () {
-    const { data } = this.props
-    const { searchText } = this.state
-    return data.filter(
-      item =>
-        (item.komoditas && item.komoditas.toLowerCase().includes(searchText.toLowerCase())) ||
-        (item.area_kota && item.area_kota.toLowerCase().includes(searchText.toLowerCase())) ||
-        (item.area_provinsi && item.area_provinsi.toLowerCase().includes(searchText.toLowerCase())) ||
-        (item.price && item.price.toLowerCase().includes(searchText.toLowerCase())) ||
-        (item.size && item.size.toLowerCase().includes(searchText.toLowerCase()))
     )
   }
 
@@ -159,7 +222,7 @@ class Table extends Component {
           title="Fish Datas"
           subHeader
           subHeaderComponent={this.filterLayout()}
-          columns={columns}
+          columns={this.columns()}
           data={this.filteredItems()}
         />
       </div>
