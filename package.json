@@ -9,7 +9,10 @@
     "json-reactform": "^0.1.14",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-redux": "^7.2.2",
     "react-scripts": "4.0.0",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
     "stein-js-client": "^0.0.2",
     "web-vitals": "^0.2.4"
   },
