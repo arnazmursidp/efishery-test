@@ -2,7 +2,7 @@ import { Component } from 'react'
 
 class Input extends Component {
   render() {
-    const { placeholder, onChange, value } = this.props
+    const { placeholder, onChange, value, name } = this.props
     return (
       <div className="Input">
         <input
@@ -10,6 +10,7 @@ class Input extends Component {
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          name={name}
         />
       </div>
     ) 

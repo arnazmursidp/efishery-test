@@ -10,10 +10,15 @@ class App extends Component {
   }
 
   render() {
-    const { fishDatas } = this.props
+    const { fishDatas, addFishData, editFishData, deleteFishData } = this.props
     return (
       <div className="App">
-        <Table data={fishDatas}/>
+        <Table
+          data={fishDatas}
+          addFishData={addFishData}
+          editFishData={editFishData}
+          deleteFishData={deleteFishData}
+        />
       </div>
     ) 
   }

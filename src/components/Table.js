@@ -36,16 +36,48 @@ class Table extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      searchText: ''
+      searchText: '',
+      comodity: '',
+      province: '',
+      city: '',
+      size: '',
+      price: '',
+      uuid: 'ab1434e0-9b7f-4b74-bf25-420e0bdfe31c'
     }
 
     this.handleFilteredData = this.handleFilteredData.bind(this)
     this.handleResetButton = this.handleResetButton.bind(this)
+    this.handleAddEditData = this.handleAddEditData.bind(this)
+    this.handleAddEditButton = this.handleAddEditButton.bind(this)
+  }
+ 
+  handleAddEditButton () {
+    const {
+      comodity,
+      province,
+      city,
+      size,
+      price,
+      uuid
+    } = this.state
+    this.props.deleteFishData({
+      uuid
+    })
   }
 
   handleResetButton (event) {
     this.setState({
       searchText: ''
+    })
+  }
+
+  handleAddEditData (event) {
+    const target = event.target
+    const name = target.name
+    const value = target.value
+
+    this.setState({
+      [name]: value
     })
   }
 
@@ -68,6 +100,40 @@ class Table extends Component {
         <Button
           text="X"
           onClick={this.handleResetButton}
+        />
+        <Input
+          placeholder="Tambah Komoditas"
+          name="comodity"
+          value={this.state.comodity}
+          onChange={this.handleAddEditData}
+        />
+        <Input
+          placeholder="Tambah Provinsi"
+          name="province"
+          value={this.state.province}
+          onChange={this.handleAddEditData}
+        />
+        <Input
+          placeholder="Tambah Kota"
+          name="city"
+          value={this.state.city}
+          onChange={this.handleAddEditData}
+        />
+        <Input
+          placeholder="Tambah Ukuran"
+          name="size"
+          value={this.state.size}
+          onChange={this.handleAddEditData}
+        />
+        <Input
+          placeholder="Tambah Harga"
+          name="price"
+          value={this.state.price}
+          onChange={this.handleAddEditData}
+        />
+        <Button
+          text="Y"
+          onClick={this.handleAddEditButton}
         />
       </div>
     )
