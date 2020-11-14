@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import View from './pages/View';
 import reportWebVitals from './reportWebVitals';
 import store from './store'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
 
 import { Provider } from 'react-redux'
 
