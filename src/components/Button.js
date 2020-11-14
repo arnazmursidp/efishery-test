@@ -1,16 +1,21 @@
-import { Component } from 'react'
+import { PureComponent } from 'react'
+import { Button } from '@material-ui/core'
 
-class Button extends Component {
+class CButton extends PureComponent {
   render() {
-    const { onClick, text } = this.props
+    const { onClick, text, color } = this.props
     return (
       <div className="Button">
-        <button onClick={onClick}>
-          {text}
-        </button>
+        <Button
+          variant="contained"
+          color={color || 'primary'}
+          onClick={onClick}
+        >
+            {text}
+        </Button>
       </div>
     ) 
   }
 }
 
-export default Button
+export default CButton

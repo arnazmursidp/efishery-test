@@ -1,9 +1,10 @@
-import { Component } from 'react'
+import { PureComponent } from 'react'
+import { Card } from '@material-ui/core';
 import DataTable from 'react-data-table-component'
 import Input from './Input'
 import Button from './Button'
 
-class Table extends Component {
+class Table extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -22,6 +23,10 @@ class Table extends Component {
     this.handleAddEditData = this.handleAddEditData.bind(this)
   }
  
+  shouldComponentUpdate (nextState, prevState) {
+    return true
+  }
+
   handleAddEditButton () {
     const {
       comodity,
@@ -218,13 +223,15 @@ class Table extends Component {
   render () {
     return (
       <div className="App">
-        <DataTable
-          title="Fish Datas"
-          subHeader
-          subHeaderComponent={this.filterLayout()}
-          columns={this.columns()}
-          data={this.filteredItems()}
-        />
+        <Card>
+          <DataTable
+            title="Fish Datas"
+            subHeader
+            subHeaderComponent={this.filterLayout()}
+            columns={this.columns()}
+            data={this.filteredItems()}
+          />
+        </Card>
       </div>
     )
   }
