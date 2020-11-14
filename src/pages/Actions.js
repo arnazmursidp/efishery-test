@@ -3,7 +3,7 @@ import api from '../libs/api'
 export function getFishDatas () {
   return async dispatch => {
     const storeData = {
-      type: 'pages/getFishDatas',
+      type: 'GET_FISH_DATA',
       data: null
     }
     try {

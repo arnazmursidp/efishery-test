@@ -2,8 +2,9 @@ import intialState from './State'
 
 const reducer = (state = intialState, action) => {
   switch (action.type) {
-    case 'pages/getFishDatas':
+    case 'GET_FISH_DATA':
       return {
+        ...state,
         fishDatas: action.data
       }
     default:

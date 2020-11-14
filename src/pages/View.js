@@ -2,36 +2,51 @@ import { connect } from 'react-redux'
 import './View.css';
 import * as actions from './Actions'
 import { Component } from 'react'
+import DataTable from 'react-data-table-component'
+
+// Initialize columns
+const columns = [
+  {
+    name: 'Komoditas',
+    selector: 'komoditas',
+    sortable: true
+  },
+  {
+    name: 'Provinsi',
+    selector: 'area_provinsi',
+    sortable: true
+  },
+  {
+    name: 'Kota',
+    selector: 'area_kota',
+    sortable: true
+  },
+  {
+    name: 'Ukuran',
+    selector: 'size',
+    sortable: true
+  },
+  {
+    name: 'Harga',
+    selector: 'price',
+    sortable: true
+  }
+]
 
 class App extends Component {
   componentDidMount() {
     this.props.getFishDatas()
-    console.log(this.props.fishDatas)
   }
 
   render() {
     const { fishDatas } = this.props
-
     return (
       <div className="App">
-        {/* {fishDatas.map((data) =>
-          <pre>
-            {data.uuid}
-          </pre>
-        )} */}
-        <header className="App-header">
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <DataTable
+          title="Fish Datas"
+          columns={columns}
+          data={fishDatas}
+        />
       </div>
     ) 
   }
