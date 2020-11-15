@@ -3,15 +3,31 @@ import ReactDOM from 'react-dom';
 import View from './pages/View';
 import reportWebVitals from './reportWebVitals';
 import store from './store'
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import './index.css';
 
 import { Provider } from 'react-redux'
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#21856d'
+    },
+    secondary: {
+      main: '#f44336'
+    },
+    error: {
+      main: '#f44336'
+    }
+  }
+});
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={ store }>
-      <View />
+      <MuiThemeProvider theme={theme}>
+        <View />
+      </MuiThemeProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

@@ -1,5 +1,10 @@
 import { PureComponent } from 'react'
-import { Card } from '@material-ui/core';
+import {
+  Card,
+  DialogTitle,
+  Grid,
+  DialogContent
+} from '@material-ui/core';
 import DataTable from 'react-data-table-component'
 import Input from '../Input'
 import Button from '../Button'
@@ -33,6 +38,7 @@ class Table extends PureComponent {
     this.handleAddEditData = this.handleAddEditData.bind(this)
   }
 
+  // Actions
   handleOpenedDeleteDialog (condition) {
     this.setState({
       dialog: {
@@ -107,6 +113,7 @@ class Table extends PureComponent {
         this.handleOpenedSnackbar('Data berhasil dihapus')
       })
   }
+
   handleResetButton (event) {
     this.setState({
       searchText: ''
@@ -130,6 +137,12 @@ class Table extends PureComponent {
     })
   }
 
+  // Computed Datas
+  formatDate (date) {
+    const newDate = new Date(date)
+    return newDate.getDate() + '-' + Number(newDate.getMonth() + 1) + '-' + newDate.getFullYear()
+  }
+  
   filteredItems () {
     const { data } = this.props
     const { searchText } = this.state
@@ -154,8 +167,8 @@ class Table extends PureComponent {
     })
   }
 
-  // Initialize columns
-  columns () {
+  // Layouts
+  layoutTableColumns () {
     return [
       {
         name: 'uuid',
@@ -186,47 +199,76 @@ class Table extends PureComponent {
       {
         name: 'Harga',
         selector: 'price',
-        sortable: true
+        sortable: true,
+        cell: row => <p>Rp {Number(row.price).toLocaleString(['ban', 'id'])}</p>
+      },
+      {
+        name: 'Tanggal Ditambahkan',
+        selector: 'tgl_parsed',
+        sortable: true,
+        cell: row => <p>{this.formatDate(row.tgl_parsed)}</p>
       },
       {
         name: 'Actions',
-        button: true,
-        cell: row => this.actionLayout(row)
+        compact: true,
+        minWidth: '140px',
+        cell: row => this.layoutAction(row)
       }
     ]
   }
 
-  actionLayout (data) {
+  layoutAction (data) {
     return (
-      <div>
-        <Button text="Edit Data" onClick={(e) => {
-          this.setState({ formCondition: 'edit' })
-          this.setTempEditData(data)
-          this.handleOpenedFormDialog(true)
-        }}/>
-        <Button text="Hapus Data" onClick={(e) => {
-          this.setTempEditData(data)
-          this.handleOpenedDeleteDialog(true)
-        }}/>
-      </div>
+      <Grid spacing={1} container direction="row" justify="start" align="center">
+        <Grid item>
+          <Button size="small" text="Edit" onClick={(e) => {
+            this.setState({ formCondition: 'edit' })
+            this.setTempEditData(data)
+            this.handleOpenedFormDialog(true)
+          }}/>
+        </Grid>
+        <Grid item>
+          <Button size="small" color="secondary" text="Hapus" onClick={(e) => {
+            this.setTempEditData(data)
+            this.handleOpenedDeleteDialog(true)
+          }}/>
+        </Grid>
+      </Grid>
     )
   }
 
-  filterLayout () {
+  layoutFilter () {
     return (
       <div>
-        <Input
-          placeholder="Cari Data"
-          label="Cari"
-          value={this.state.searchText}
-          onChange={this.handleFilteredData}
-        />
+        <Grid
+          container
+          direction="row"
+          justify="center"
+          spacing={1}
+          alignItems="center"
+          style={{
+            marginBottom: '8px'
+          }}
+        >
+          <Grid item xs={8}>
+            <Input
+              placeholder="Cari Data"
+              label="Cari"
+              value={this.state.searchText}
+              onChange={this.handleFilteredData}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <Button
+              size="medium"
+              text="X"
+              onClick={this.handleResetButton}
+            />
+          </Grid>
+        </Grid>
         <Button
-          text="X"
-          onClick={this.handleResetButton}
-        />
-        <Button
-          text="Add"
+          text="Tambah Data"
+          size="medium"
           onClick={(e) => {
             this.setState({ formCondition: 'add' })
             this.handleOpenedFormDialog(true)
@@ -236,6 +278,160 @@ class Table extends PureComponent {
     )
   }
 
+  layoutDeleteDialog () {
+    return (
+      <Dialog
+        isOpened={this.state.dialog.isDialogDeleteOpened}
+        onClose={(e) => { this.handleOpenedDeleteDialog(false) }}
+      >
+        <DialogTitle>Anda yakin ingin menghapus data?</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} direction="row" alignItems="center" justify="center">
+            <Grid item xs={6}>
+              <Button
+                size="medium"
+                text="Ya"
+                color="secondary"
+                onClick={(e) => {
+                  this.handleDeleteFishData()
+                }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                size="medium"
+                text="Tidak"
+                onClick={(e) => {
+                  this.handleOpenedDeleteDialog(false)
+                }}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  layoutAddEditDialog () {
+    return (
+      <Dialog
+        isOpened={this.state.dialog.isDialogFormOpened}
+        onClose={(e) => { this.handleOpenedFormDialog(false) }}
+      >
+        <DialogTitle>
+          {this.state.formCondition === 'edit' ? 'Ubah Data' : 'Tambah Data' }
+        </DialogTitle>
+        <DialogContent>
+          <Input
+            style={{
+              marginBottom: '16px'
+            }}
+            label={
+              this.state.formCondition === 'edit'
+              ? 'Edit Komoditas'
+              : 'Tambah Komoditas'
+            }
+            placeholder={
+              this.state.formCondition === 'edit'
+              ? 'Edit Komoditas'
+              : 'Tambah Komoditas'
+            }
+            name="comodity"
+            value={this.state.comodity}
+            onChange={this.handleAddEditData}
+          />
+          <Input
+            style={{
+              marginBottom: '16px'
+            }}
+            label={
+              this.state.formCondition === 'edit'
+              ? 'Edit Provinsi'
+              : 'Tambah Provinsi'
+            }
+            placeholder={
+              this.state.formCondition === 'edit'
+              ? 'Edit Provinsi'
+              : 'Tambah Provinsi'
+            }
+            name="province"
+            value={this.state.province}
+            onChange={this.handleAddEditData}
+          />
+          <Input
+            style={{
+              marginBottom: '16px'
+            }}
+            label={
+              this.state.formCondition === 'edit'
+              ? 'Edit Kota'
+              : 'Tambah Kota'
+            }
+            placeholder={
+              this.state.formCondition === 'edit'
+              ? 'Edit Kota'
+              : 'Tambah Kota'
+            }
+            name="city"
+            value={this.state.city}
+            onChange={this.handleAddEditData}
+          />
+          <Input
+            style={{
+              marginBottom: '16px'
+            }}
+            label={
+              this.state.formCondition === 'edit'
+              ? 'Edit Ukuran'
+              : 'Tambah Ukuran'
+            }
+            placeholder={
+              this.state.formCondition === 'edit'
+              ? 'Edit Ukuran'
+              : 'Tambah Ukuran'
+            }
+            name="size"
+            value={this.state.size}
+            onChange={this.handleAddEditData}
+          />
+          <Input
+            style={{
+              marginBottom: '16px'
+            }}
+            label={
+              this.state.formCondition === 'edit'
+              ? 'Edit Harga'
+              : 'Tambah Harga'
+            }
+            placeholder={
+              this.state.formCondition === 'edit'
+              ? 'Edit Harga'
+              : 'Tambah Harga'
+            }
+            name="price"
+            value={this.state.price}
+            onChange={this.handleAddEditData}
+          />
+          <Button
+            text={
+              this.state.formCondition === 'edit'
+              ? 'Ubah Data'
+              : 'Tambah Data'
+            }
+            size="medium"
+            style={{
+              marginBottom: '16px'
+            }}
+            onClick={(e) => {
+              this.handleAddEditButton()
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  // Render function
   render () {
     return (
       <div className="App">
@@ -243,75 +439,23 @@ class Table extends PureComponent {
           <DataTable
             title="Fish Datas"
             subHeader
-            subHeaderComponent={this.filterLayout()}
-            columns={this.columns()}
+            subHeaderComponent={this.layoutFilter()}
+            columns={this.layoutTableColumns()}
             data={this.filteredItems()}
+            pagination
+            paginationTotalRows={this.filteredItems().length}
           />
         </Card>
+
         <Snackbar
           isOpened={this.state.snackbar.isOpened}
           text={this.state.snackbar.text}
           onClose={() => this.setState({ snackbar: { isOpened: false }})}
         />
-        <Dialog
-          isOpened={this.state.dialog.isDialogDeleteOpened}
-          onClose={(e) => { this.handleOpenedDeleteDialog(false) }}
-        >
-          <p>Anda yakin ingin menghapus data?</p>
-          <Button
-            text="X"
-            onClick={(e) => {
-              this.handleOpenedDeleteDialog(false)
-            }}
-          />
-          <Button
-            text="Y"
-            onClick={(e) => {
-              this.handleDeleteFishData()
-            }}
-          />
-        </Dialog>
-        <Dialog
-          isOpened={this.state.dialog.isDialogFormOpened}
-          onClose={(e) => { this.handleOpenedFormDialog(false) }}
-        >
-          <Input
-            placeholder="Tambah Komoditas"
-            name="comodity"
-            value={this.state.comodity}
-            onChange={this.handleAddEditData}
-          />
-          <Input
-            placeholder="Tambah Provinsi"
-            name="province"
-            value={this.state.province}
-            onChange={this.handleAddEditData}
-          />
-          <Input
-            placeholder="Tambah Kota"
-            name="city"
-            value={this.state.city}
-            onChange={this.handleAddEditData}
-          />
-          <Input
-            placeholder="Tambah Ukuran"
-            name="size"
-            value={this.state.size}
-            onChange={this.handleAddEditData}
-          />
-          <Input
-            placeholder="Tambah Harga"
-            name="price"
-            value={this.state.price}
-            onChange={this.handleAddEditData}
-          />
-          <Button
-            text="Y"
-            onClick={(e) => {
-              this.handleAddEditButton()
-            }}
-          />
-        </Dialog>
+
+        {/* Layout callers */}
+        {this.layoutDeleteDialog()}
+        {this.layoutAddEditDialog()}
       </div>
     )
   }

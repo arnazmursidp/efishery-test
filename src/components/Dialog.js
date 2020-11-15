@@ -7,6 +7,7 @@ function CDialog (props) {
     <Dialog
       open={isOpened}
       onClose={onClose}
+      fullWidth
     >
       {children}
     </Dialog>
