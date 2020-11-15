@@ -1,16 +1,31 @@
-import { Component } from 'react'
+import { PureComponent } from 'react'
+import { TextField } from '@material-ui/core'
 
-class Input extends Component {
+class Input extends PureComponent {
   render() {
-    const { placeholder, onChange, value, name } = this.props
+    const {
+      label,
+      placeholder,
+      onChange,
+      value,
+      name,
+      styling,
+      style,
+      size
+    } = this.props
     return (
       <div className="Input">
-        <input
+        <TextField
           type="text"
           placeholder={placeholder}
           value={value}
           onChange={onChange}
           name={name}
+          variant={styling || 'outlined'}
+          size={size || 'small'}
+          fullWidth
+          style={style}
+          label={label || placeholder}
         />
       </div>
     ) 
