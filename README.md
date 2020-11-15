@@ -4,6 +4,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+### `yarn install`
+After cloning the repo, run yarn install first
+
 In the project directory, you can run:
 
 ### `yarn start`
