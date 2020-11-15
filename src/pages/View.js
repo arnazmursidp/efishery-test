@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import './View.css';
 import * as actions from './Actions'
 import { Component } from 'react'
-import Table from '../components/Table'
+import Table from '../components/Table/Index'
 
 class App extends Component {
   componentDidMount() {

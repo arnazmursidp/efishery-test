@@ -26,7 +26,7 @@ export function addFishData (payload) {
       const data = await api.append('list', [payload])
       if (data) {
         storeData.type = 'ADD_FISH_DATA'
-        storeData.data = data
+        storeData.data = payload
         dispatch(storeData)
       }
     } catch (error) {

@@ -1,8 +1,10 @@
 import { PureComponent } from 'react'
 import { Card } from '@material-ui/core';
 import DataTable from 'react-data-table-component'
-import Input from './Input'
-import Button from './Button'
+import Input from '../Input'
+import Button from '../Button'
+import Dialog from '../Dialog'
+import Snackbar from '../Snackbar'
 
 class Table extends PureComponent {
   constructor(props) {
@@ -15,16 +17,45 @@ class Table extends PureComponent {
       size: '',
       price: '',
       uuid: '',
-      formCondition: ''
+      formCondition: '',
+      dialog: {
+        isDialogFormOpened: false,
+        isDialogDeleteOpened: false
+      },
+      snackbar: {
+        isOpened: false,
+        text: ''
+      }
     }
 
     this.handleFilteredData = this.handleFilteredData.bind(this)
     this.handleResetButton = this.handleResetButton.bind(this)
     this.handleAddEditData = this.handleAddEditData.bind(this)
   }
- 
-  shouldComponentUpdate (nextState, prevState) {
-    return true
+
+  handleOpenedDeleteDialog (condition) {
+    this.setState({
+      dialog: {
+        isDialogDeleteOpened: condition
+      }
+    })
+  }
+
+  handleOpenedFormDialog (condition) {
+    this.setState({
+      dialog: {
+        isDialogFormOpened: condition
+      }
+    })
+  }
+
+  handleOpenedSnackbar (text) {
+    this.setState({
+      snackbar: {
+        isOpened: true,
+        text
+      }
+    })
   }
 
   handleAddEditButton () {
@@ -39,28 +70,42 @@ class Table extends PureComponent {
     } = this.state
     if (formCondition === 'edit') {
       this.props.editFishData({
-        comodity,
-        province,
-        city,
+        komoditas: comodity,
+        area_provinsi: province,
+        area_kota: city,
         size,
         price,
         uuid
       })
+        .then(() => {
+          this.handleOpenedFormDialog(false)
+          this.handleOpenedSnackbar('Data berhasil diubah')
+        })
     } else {
       this.props.addFishData({
-        comodity,
-        province,
-        city,
+        komoditas: comodity,
+        area_provinsi: province,
+        area_kota: city,
         size,
-        price
+        price,
+        uuid: '9900abcdef' + Math.random() * Math.floor(21)
       })
+        .then(() => {
+          this.handleOpenedFormDialog(false)
+          this.handleOpenedSnackbar('Data berhasil ditambah')
+        })
     }
   }
 
-  handleDeleteFishData (uuid) {
+  handleDeleteFishData () {
+    const { uuid } = this.state
     this.props.deleteFishData({
       uuid
     })
+      .then(() => {
+        this.handleOpenedDeleteDialog(false)
+        this.handleOpenedSnackbar('Data berhasil dihapus')
+      })
   }
   handleResetButton (event) {
     this.setState({
@@ -157,10 +202,11 @@ class Table extends PureComponent {
         <Button text="Edit Data" onClick={(e) => {
           this.setState({ formCondition: 'edit' })
           this.setTempEditData(data)
-          this.handleAddEditButton()
+          this.handleOpenedFormDialog(true)
         }}/>
         <Button text="Hapus Data" onClick={(e) => {
-          this.handleDeleteFishData(data.uuid)
+          this.setTempEditData(data)
+          this.handleOpenedDeleteDialog(true)
         }}/>
       </div>
     )
@@ -179,41 +225,11 @@ class Table extends PureComponent {
           text="X"
           onClick={this.handleResetButton}
         />
-        <Input
-          placeholder="Tambah Komoditas"
-          name="comodity"
-          value={this.state.comodity}
-          onChange={this.handleAddEditData}
-        />
-        <Input
-          placeholder="Tambah Provinsi"
-          name="province"
-          value={this.state.province}
-          onChange={this.handleAddEditData}
-        />
-        <Input
-          placeholder="Tambah Kota"
-          name="city"
-          value={this.state.city}
-          onChange={this.handleAddEditData}
-        />
-        <Input
-          placeholder="Tambah Ukuran"
-          name="size"
-          value={this.state.size}
-          onChange={this.handleAddEditData}
-        />
-        <Input
-          placeholder="Tambah Harga"
-          name="price"
-          value={this.state.price}
-          onChange={this.handleAddEditData}
-        />
         <Button
-          text="Y"
+          text="Add"
           onClick={(e) => {
             this.setState({ formCondition: 'add' })
-            this.handleAddEditButton()
+            this.handleOpenedFormDialog(true)
           }}
         />
       </div>
@@ -232,6 +248,70 @@ class Table extends PureComponent {
             data={this.filteredItems()}
           />
         </Card>
+        <Snackbar
+          isOpened={this.state.snackbar.isOpened}
+          text={this.state.snackbar.text}
+          onClose={() => this.setState({ snackbar: { isOpened: false }})}
+        />
+        <Dialog
+          isOpened={this.state.dialog.isDialogDeleteOpened}
+          onClose={(e) => { this.handleOpenedDeleteDialog(false) }}
+        >
+          <p>Anda yakin ingin menghapus data?</p>
+          <Button
+            text="X"
+            onClick={(e) => {
+              this.handleOpenedDeleteDialog(false)
+            }}
+          />
+          <Button
+            text="Y"
+            onClick={(e) => {
+              this.handleDeleteFishData()
+            }}
+          />
+        </Dialog>
+        <Dialog
+          isOpened={this.state.dialog.isDialogFormOpened}
+          onClose={(e) => { this.handleOpenedFormDialog(false) }}
+        >
+          <Input
+            placeholder="Tambah Komoditas"
+            name="comodity"
+            value={this.state.comodity}
+            onChange={this.handleAddEditData}
+          />
+          <Input
+            placeholder="Tambah Provinsi"
+            name="province"
+            value={this.state.province}
+            onChange={this.handleAddEditData}
+          />
+          <Input
+            placeholder="Tambah Kota"
+            name="city"
+            value={this.state.city}
+            onChange={this.handleAddEditData}
+          />
+          <Input
+            placeholder="Tambah Ukuran"
+            name="size"
+            value={this.state.size}
+            onChange={this.handleAddEditData}
+          />
+          <Input
+            placeholder="Tambah Harga"
+            name="price"
+            value={this.state.price}
+            onChange={this.handleAddEditData}
+          />
+          <Button
+            text="Y"
+            onClick={(e) => {
+              this.handleAddEditButton()
+            }}
+          />
+        </Dialog>
       </div>
     )
   }
