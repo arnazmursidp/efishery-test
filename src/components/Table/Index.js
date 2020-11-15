@@ -109,6 +109,9 @@ class Table extends PureComponent {
       uuid
     })
       .then(() => {
+        this.setState({
+          uuid: ''
+        })
         this.handleOpenedDeleteDialog(false)
         this.handleOpenedSnackbar('Data berhasil dihapus')
       })
